@@ -29,14 +29,15 @@ service cloud.firestore {
     
     function isAdmin() {
       return isAuthenticated() &&
-        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
-          (request.auth.token.email == "info@embeddedlinuxgroup.com" && request.auth.token.email_verified == true));
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         (request.auth.token.email == "info@embeddedlinuxgroup.com" && request.auth.token.email_verified == true));
     }
 
     function isValidReservation(data) {
       return data.courtId is string &&
              data.customerName is string && data.customerName.size() < 100 &&
-             data.status in ['pending', 'confirmed', 'cancelled'];
+             (data.status in ['pending', 'confirmed', 'cancelled'] || !('status' in data));
     }
 
     // ===============================================================
@@ -44,12 +45,14 @@ service cloud.firestore {
     // ===============================================================
 
     match /reservations/{reservationId} {
-      // Allow the server-side API to create (if using client SDK on server, we might need a specific check or allow public create for this prototype)
-      // For this prototype, we allow public create to support the LINE Mini App API if it's called without user auth context
+      // Allow the server-side API to create
       allow create: if isValidReservation(request.resource.data);
       
-      // Only admins or authenticated staff can read/update/delete
-      allow read, update, delete: if isAdmin();
+      // Allow authenticated users to read for this prototype
+      allow read: if isAuthenticated();
+      
+      // Only admins can update/delete
+      allow update, delete: if isAdmin();
     }
 
     match /users/{userId} {

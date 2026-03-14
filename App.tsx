@@ -12,36 +12,41 @@ import Members from './pages/Members';
 import Settings from './pages/Settings';
 import Sidebar from './components/Sidebar';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, Search } from 'lucide-react';
+import { Bell, Search, LogOut } from 'lucide-react';
+import { auth } from './firebase';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 
 const App: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [currentView, setCurrentView] = useState<ViewState>(ViewState.DASHBOARD);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Mock User
-  const user: User = {
-    id: 'u1',
-    name: 'Admin User',
-    email: 'admin@courtflow.io',
-    role: UserRole.SUPER_ADMIN,
-  };
-
   useEffect(() => {
-    // Simulate initial loading
-    const timer = setTimeout(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        setCurrentUser({
+          id: firebaseUser.uid,
+          name: firebaseUser.displayName || 'User',
+          email: firebaseUser.email || '',
+          role: firebaseUser.email === 'info@embeddedlinuxgroup.com' ? UserRole.SUPER_ADMIN : UserRole.STAFF,
+          avatarUrl: firebaseUser.photoURL || undefined
+        });
+      } else {
+        setCurrentUser(null);
+      }
       setIsLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  const handleLogin = () => {
-    setIsAuthenticated(true);
-  };
-
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    setCurrentView(ViewState.DASHBOARD);
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      setCurrentView(ViewState.DASHBOARD);
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   if (isLoading) {
@@ -55,8 +60,8 @@ const App: React.FC = () => {
     );
   }
 
-  if (!isAuthenticated) {
-    return <Login onLogin={handleLogin} />;
+  if (!currentUser) {
+    return <Login />;
   }
 
   const renderContent = () => {
@@ -94,7 +99,7 @@ const App: React.FC = () => {
       <Sidebar 
         currentView={currentView} 
         onChangeView={setCurrentView} 
-        user={user}
+        user={currentUser}
         onLogout={handleLogout}
       />
 

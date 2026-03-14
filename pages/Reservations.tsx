@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { GlassCard, NeonButton, Badge } from '../components/UI';
 import { 
@@ -6,7 +8,7 @@ import {
   Trash2, Lock, Move, MessageSquare
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { db } from '../firebase';
+import { auth, db } from '../firebase';
 import { 
   collection, 
   onSnapshot, 
@@ -19,6 +21,57 @@ import {
   serverTimestamp,
   Timestamp
 } from 'firebase/firestore';
+
+enum OperationType {
+  CREATE = 'create',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LIST = 'list',
+  GET = 'get',
+  WRITE = 'write',
+}
+
+interface FirestoreErrorInfo {
+  error: string;
+  operationType: OperationType;
+  path: string | null;
+  authInfo: {
+    userId?: string;
+    email?: string | null;
+    emailVerified?: boolean;
+    isAnonymous?: boolean;
+    tenantId?: string | null;
+    providerInfo: {
+      providerId: string;
+      displayName: string | null;
+      email: string | null;
+      photoUrl: string | null;
+    }[];
+  }
+}
+
+const handleFirestoreError = (error: unknown, operationType: OperationType, path: string | null) => {
+  const errInfo: FirestoreErrorInfo = {
+    error: error instanceof Error ? error.message : String(error),
+    authInfo: {
+      userId: auth.currentUser?.uid,
+      email: auth.currentUser?.email,
+      emailVerified: auth.currentUser?.emailVerified,
+      isAnonymous: auth.currentUser?.isAnonymous,
+      tenantId: auth.currentUser?.tenantId,
+      providerInfo: auth.currentUser?.providerData.map(provider => ({
+        providerId: provider.providerId,
+        displayName: provider.displayName,
+        email: provider.email,
+        photoUrl: provider.photoURL
+      })) || []
+    },
+    operationType,
+    path
+  }
+  console.error('Firestore Error: ', JSON.stringify(errInfo));
+  // In a real app we might show a toast here
+};
 
 // --- Types ---
 type BookingType = 'booking' | 'maintenance' | 'cleaning';
@@ -90,7 +143,7 @@ const Reservations: React.FC = () => {
       setBookings(firestoreBookings);
       setIsSyncing(false);
     }, (error) => {
-      console.error("Firestore Error:", error);
+      handleFirestoreError(error, OperationType.GET, 'reservations');
       setIsSyncing(false);
     });
 

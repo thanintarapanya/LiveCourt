@@ -1,32 +1,33 @@
+"use client";
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { GlassCard } from '../components/UI';
 import { Activity, Mail, Lock, ArrowRight, Check } from 'lucide-react';
+import { auth } from '../firebase';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
-interface LoginProps {
-  onLogin: () => void;
-}
-
-const Login: React.FC<LoginProps> = ({ onLogin }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleGoogleLogin = async () => {
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+    setError(null);
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+    } catch (err: any) {
+      console.error("Login error:", err);
+      setError(err.message || "Failed to sign in with Google");
+    } finally {
       setIsLoading(false);
-      setIsSuccess(true);
-      setTimeout(onLogin, 800);
-    }, 1500);
+    }
   };
 
   return (
     <div className="relative w-full h-screen flex items-center justify-center overflow-hidden bg-brand-grey">
-      {/* Animated Background Blobs - Light & Orange */}
+      {/* Animated Background Blobs */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-brand-orange/20 rounded-full blur-[100px] animate-blob mix-blend-multiply" />
         <div className="absolute top-[20%] right-[-10%] w-[400px] h-[400px] bg-gray-300/40 rounded-full blur-[100px] animate-blob animation-delay-2000 mix-blend-multiply" />
@@ -44,65 +45,35 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             <Activity size={32} className="text-white" />
           </div>
           <h1 className="text-3xl font-light tracking-tight text-gray-900 mb-2">CourtFlow</h1>
-          <p className="text-gray-500 text-sm font-light">Enter your credentials to access the dashboard</p>
+          <p className="text-gray-500 text-sm font-light">Sign in to access the dashboard</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-1">
-            <label className="text-xs uppercase tracking-wider text-gray-500 font-bold ml-1">Email Address</label>
-            <div className="relative group">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-orange transition-colors" size={18} />
-              <input 
-                type="email" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-10 pr-4 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
-                placeholder="admin@courtflow.io"
-                required
-              />
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-xs uppercase tracking-wider text-gray-500 font-bold ml-1">Password</label>
-            <div className="relative group">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-orange transition-colors" size={18} />
-              <input 
-                type="password" 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-10 pr-4 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
-                placeholder="••••••••"
-                required
-              />
-            </div>
-          </div>
-
+        <div className="space-y-4">
           <button
-            type="submit"
-            disabled={isLoading || isSuccess}
-            className={`w-full py-3.5 rounded-xl font-medium text-sm transition-all duration-300 relative overflow-hidden group shadow-lg ${
-              isSuccess ? 'bg-green-500 text-white' : 'bg-brand-black text-white hover:bg-gray-800'
-            }`}
+            onClick={handleGoogleLogin}
+            disabled={isLoading}
+            className="w-full flex items-center justify-center gap-3 py-3.5 px-4 bg-white border border-gray-200 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-all shadow-sm group"
           >
-            <div className="relative z-10 flex items-center justify-center gap-2">
-              {isLoading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : isSuccess ? (
-                <Check size={20} className="animate-scale-in" />
-              ) : (
-                <>
-                  <span>Sign In</span>
-                  <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                </>
-              )}
-            </div>
+            {isLoading ? (
+              <div className="w-5 h-5 border-2 border-brand-orange/30 border-t-brand-orange rounded-full animate-spin" />
+            ) : (
+              <>
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
+                <span>Sign in with Google</span>
+              </>
+            )}
           </button>
-        </form>
+
+          {error && (
+            <p className="text-xs text-red-500 text-center bg-red-50 p-2 rounded-lg border border-red-100">
+              {error}
+            </p>
+          )}
+        </div>
 
         <div className="mt-8 text-center">
-          <p className="text-xs text-gray-400">
-            Protected by Supabase Auth & RLS Policies.
+          <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">
+            Secure Admin Access Only
           </p>
         </div>
       </GlassCard>
