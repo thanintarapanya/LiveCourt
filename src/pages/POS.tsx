@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GlassCard, NeonButton } from '@/components/Ui';
+import { GlassCard, NeonButton } from '@/components/SharedComponents';
 import { ShoppingCart, Plus, Minus, Trash2, CreditCard, Coffee, Package, Tag, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 

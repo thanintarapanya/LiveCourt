@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { GlassCard, NeonButton, Badge } from '@/components/Ui';
+import { GlassCard, NeonButton, Badge } from '@/components/SharedComponents';
 import { 
   Calendar as CalendarIcon, Clock, User, ChevronLeft, ChevronRight, 
   Filter, Plus, Wrench, Sparkles, X, Check, AlertCircle, Users, 

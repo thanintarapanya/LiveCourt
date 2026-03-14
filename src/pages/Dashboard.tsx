@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GlassCard, Badge } from '@/components/Ui';
+import { GlassCard, Badge } from '@/components/SharedComponents';
 import { Court, KPIMetric } from '@/types';
 import { DollarSign, Activity, Users, Zap, TrendingUp, Thermometer, Clock } from 'lucide-react';
 import { 
