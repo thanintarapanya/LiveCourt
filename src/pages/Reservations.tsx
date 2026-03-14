@@ -5,7 +5,7 @@ import { GlassCard, NeonButton, Badge } from '@/components/Ui';
 import { 
   Calendar as CalendarIcon, Clock, User, ChevronLeft, ChevronRight, 
   Filter, Plus, Wrench, Sparkles, X, Check, AlertCircle, Users, 
-  Trash2, Lock, Move, MessageSquare
+  Trash2, Lock, Move, MessageSquare, RefreshCw
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { auth, db } from '@/firebase';
@@ -111,6 +111,7 @@ const Reservations: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isSyncing, setIsSyncing] = useState(true);
+  const [livecourtStatus, setLivecourtStatus] = useState<'idle' | 'syncing' | 'success' | 'error'>('idle');
   
   // Real-time Firestore Sync
   useEffect(() => {
@@ -350,6 +351,26 @@ const Reservations: React.FC = () => {
     }
   };
 
+  const syncWithLivecourt = async () => {
+    setLivecourtStatus('syncing');
+    try {
+      // This would normally call the Livecourt API to pull data
+      // For now, we'll simulate a successful sync
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // In a real implementation, you would fetch from Livecourt:
+      // const response = await fetch('https://livecourt-api.example.com/bookings');
+      // const data = await response.json();
+      // ... process and save to Firestore ...
+
+      setLivecourtStatus('success');
+      setTimeout(() => setLivecourtStatus('idle'), 3000);
+    } catch (error) {
+      console.error("Livecourt sync error:", error);
+      setLivecourtStatus('error');
+    }
+  };
+
   return (
     <div className="space-y-6 pb-4 h-[calc(100vh-140px)] flex flex-col relative">
       {/* Header & Controls */}
@@ -360,6 +381,23 @@ const Reservations: React.FC = () => {
         </div>
         
         <div className="flex flex-wrap items-center gap-3">
+           {/* Livecourt Sync */}
+           <button 
+             onClick={syncWithLivecourt}
+             disabled={livecourtStatus === 'syncing'}
+             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border transition-all ${
+               livecourtStatus === 'syncing' ? 'bg-gray-50 text-gray-400 border-gray-200' :
+               livecourtStatus === 'success' ? 'bg-green-50 text-green-700 border-green-200' :
+               livecourtStatus === 'error' ? 'bg-red-50 text-red-700 border-red-200' :
+               'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100'
+             }`}
+           >
+             <RefreshCw size={16} className={livecourtStatus === 'syncing' ? 'animate-spin' : ''} />
+             {livecourtStatus === 'syncing' ? 'Syncing...' : 
+              livecourtStatus === 'success' ? 'Synced with Livecourt' : 
+              livecourtStatus === 'error' ? 'Sync Failed' : 'Sync Livecourt'}
+           </button>
+
            {/* Mock API Trigger */}
            <button 
              onClick={mockLineReservation}
