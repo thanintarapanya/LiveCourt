@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GlassCard, NeonButton, Badge } from '@/components/SharedComponents';
+import { GlassCard, NeonButton, Badge } from '@/components/Ui';
 import { 
   Settings, Droplets, Zap, DollarSign, Calendar, TrendingUp, 
   X, CheckSquare, Square, BarChart3, Users, ArrowRight

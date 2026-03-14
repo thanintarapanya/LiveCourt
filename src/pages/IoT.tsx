@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GlassCard, NeonButton } from '@/components/SharedComponents';
+import { GlassCard, NeonButton } from '@/components/Ui';
 import { Device } from '@/types';
 import { 
   Lightbulb, Fan, Wind, Power, AlertTriangle, RefreshCw, 
