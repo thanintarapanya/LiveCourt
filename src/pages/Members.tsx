@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { GlassCard, NeonButton, Badge } from '@/components/UI';
+import { GlassCard, NeonButton, Badge } from '@/components/Ui';
 import { 
   Users, Search, UserPlus, Filter, Phone, Mail, 
   MoreVertical, Calendar, Star, ShieldCheck, X 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GlassCard, NeonButton, Badge } from '@/components/UI';
+import { GlassCard, NeonButton, Badge } from '@/components/Ui';
 import { Search, Package, Clock, AlertTriangle, RotateCcw, CheckCircle2, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 

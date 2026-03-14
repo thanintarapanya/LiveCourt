@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { GlassCard } from '@/components/UI';
+import { GlassCard } from '@/components/Ui';
 import { Activity, Mail, Lock, ArrowRight, Check } from 'lucide-react';
 import { auth } from '@/firebase';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
