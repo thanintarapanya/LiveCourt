@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { User, UserRole, ViewState } from './types';
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import IoT from './pages/IoT';
-import Reservations from './pages/Reservations';
-import Analytics from './pages/Analytics';
-import Rental from './pages/Rental';
-import POS from './pages/POS';
-import Vending from './pages/Vending';
-import Members from './pages/Members';
-import Settings from './pages/Settings';
-import Sidebar from './components/Sidebar';
+import { User, UserRole, ViewState } from '@/types';
+import Login from '@/pages/Login';
+import Dashboard from '@/pages/Dashboard';
+import IoT from '@/pages/IoT';
+import Reservations from '@/pages/Reservations';
+import Analytics from '@/pages/Analytics';
+import Rental from '@/pages/Rental';
+import POS from '@/pages/POS';
+import Vending from '@/pages/Vending';
+import Members from '@/pages/Members';
+import Settings from '@/pages/Settings';
+import Sidebar from '@/components/Sidebar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, Search, LogOut } from 'lucide-react';
-import { auth } from './firebase';
+import { auth } from '@/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 
 const App: React.FC = () => {
