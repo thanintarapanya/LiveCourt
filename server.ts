@@ -1,12 +1,18 @@
 import express from "express";
-import { createServer as createViteServer } from "vite";
 import path from "path";
 import cors from "cors";
+import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
-import firebaseConfig from "./firebase-applet-config.json";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Initialize Firebase for the server
+const firebaseConfig = JSON.parse(
+  readFileSync(path.join(__dirname, "firebase-applet-config.json"), "utf8")
+);
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp, firebaseConfig.firestoreDatabaseId);
 
@@ -55,11 +61,13 @@ app.post("/api/reservations", async (req, res) => {
 
 // Vite middleware for development
 if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
-  createViteServer({
-    server: { middlewareMode: true },
-    appType: "spa",
-  }).then(vite => {
-    app.use(vite.middlewares);
+  import("vite").then(({ createServer: createViteServer }) => {
+    createViteServer({
+      server: { middlewareMode: true },
+      appType: "spa",
+    }).then(vite => {
+      app.use(vite.middlewares);
+    });
   });
 } else if (!process.env.VERCEL) {
   const distPath = path.join(process.cwd(), "dist");
