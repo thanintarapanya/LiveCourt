@@ -1,0 +1,26 @@
+{
+  "entities": {
+    "Reservation": {
+      "title": "Reservation",
+      "description": "A booking for a badminton court.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique ID of the reservation" },
+        "courtId": { "type": "string", "description": "ID of the court being booked" },
+        "customerName": { "type": "string", "description": "Name of the customer" },
+        "lineUserId": { "type": "string", "description": "LINE User ID from the mini app" },
+        "startTime": { "type": "string", "format": "date-time", "description": "Start time of the booking" },
+        "endTime": { "type": "string", "format": "date-time", "description": "End time of the booking" },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "cancelled"], "description": "Current status of the reservation" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the reservation was created" }
+      },
+      "required": ["courtId", "customerName", "startTime", "endTime", "status"]
+    }
+  },
+  "firestore": {
+    "reservations": {
+      "schema": "Reservation",
+      "description": "Collection of court reservations."
+    }
+  }
+}

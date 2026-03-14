@@ -1,0 +1,5 @@
+{
+  "name": "CourtFlow IoT Dashboard (Owner)",
+  "description": "A modular, minimalist WebApp for automated badminton court management featuring a glassy UI, IoT control, and analytics.",
+  "requestFramePermissions": []
+}
